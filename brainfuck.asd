@@ -2,9 +2,9 @@
 
 (asdf:defsystem #:brainfuck
   :serial t
-  :description "Describe brainfuck here"
-  :author "Your Name <your.name@example.com>"
-  :license "Specify license here"
+  :description "brainfuck"
+  :author "John Wood <j@jdtw.us>"
+  :license "Simplified BSD"
   :components ((:file "package")
                (:file "brainfuck")))
 
