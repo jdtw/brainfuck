@@ -117,6 +117,38 @@
                       (incf ip)))
              (otherwise (incf ip)))))))
 
+(defun bf-body (program)
+  (let ((ip 0) (exps nil) (length (length program)))
+    (loop while (< ip length) do
+         (case (char program ip)
+           (#\> (push '(incf ptr) exps)
+                (incf ip))
+           (#\< (push '(decf ptr) exps)
+                (incf ip))
+           (#\+ (push '(setf (aref mem ptr) (mod (1+ (aref mem ptr)) #x100)) exps)
+                (incf ip))
+           (#\- (push '(setf (aref mem ptr) (mod (1- (aref mem ptr)) #x100)) exps)
+                (incf ip))
+           (#\. (push '(write-char (code-char (aref mem ptr))) exps)
+                (incf ip))
+           (#\[ (let* ((end (find-bracket program ip))
+                       (body (bf-body (subseq program (1+ ip) end))))
+                  (push `(loop while (not (zerop (aref mem ptr)))
+                              ,@(when body `(do ,@body)))
+                        exps)
+                  (setf ip end)))
+           (otherwise (incf ip))))
+    (nreverse exps)))
+
+(defun bf-compile (state)
+  (time
+   (compile
+    nil
+    `(lambda ()
+       (let ((ptr 0) (mem (make-array 30000 :element-type '(unsigned-byte 8) :initial-element 0)))
+         ,@(bf-body (bf-state-program state))
+         (values))))))
+
 (defun bf-repl ()
   (loop do
        (princ "BRAINFUCK> ")
