@@ -108,32 +108,29 @@
              (otherwise (incf ip)))))))
 
 (defun bf-body (program)
-  (let ((stack (list nil)))
-    (loop for c across program do
-         (case c
-           (#\> (push '(incf ptr) (car stack)))
-           (#\< (push '(decf ptr) (car stack)))
-           (#\+ (push '(setf (aref mem ptr) (mod (1+ (aref mem ptr)) #x100)) (car stack)))
-           (#\- (push '(setf (aref mem ptr) (mod (1- (aref mem ptr)) #x100)) (car stack)))
-           (#\. (push '(write-char (code-char (aref mem ptr))) (car stack)))
-           (#\[ (push nil stack))
-           (#\] (push (make-bf-loop (reverse (pop stack))) (car stack)))))
-    (if (= (length stack) 1)
-        (nreverse (car stack))
-        (error "Unmatched bracket"))))
+  `(lambda ()
+     (let ((ptr 0) (mem (make-array 30000 :element-type '(unsigned-byte 8) :initial-element 0)))
+       ,@(loop
+            with stack = (list nil)
+            for c across program do
+              (case c
+                (#\> (push '(incf ptr) (car stack)))
+                (#\< (push '(decf ptr) (car stack)))
+                (#\+ (push '(setf (aref mem ptr) (mod (1+ (aref mem ptr)) #x100)) (car stack)))
+                (#\- (push '(setf (aref mem ptr) (mod (1- (aref mem ptr)) #x100)) (car stack)))
+                (#\. (push '(write-char (code-char (aref mem ptr))) (car stack)))
+                (#\[ (push nil stack))
+                (#\] (push (make-bf-loop (reverse (pop stack))) (car stack))))
+            finally (return (if (= (length stack) 1)
+                                (nreverse (car stack))
+                                (error "Unmatched bracket"))))))) 
 
 (defun make-bf-loop (body)
   `(loop while (not (zerop (aref mem ptr)))
         ,@(when body `(do ,@body))))
 
-(defun bf-compile (state)
-  (time
-   (compile
-    nil
-    `(lambda ()
-       (let ((ptr 0) (mem (make-array 30000 :element-type '(unsigned-byte 8) :initial-element 0)))
-         ,@(bf-body (bf-state-program state))
-         (values))))))
+(defun bf-compile (program)
+  (time (compile nil (bf-body program))))
 
 (defun bf-repl ()
   (loop do
