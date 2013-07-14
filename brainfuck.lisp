@@ -68,29 +68,19 @@
          ,@body))))
 
 
-(defmacro find-bracket (str pos &optional backwards)
-  (let ((s (gensym))
-        (p (gensym))
-        (back (gensym))
-        (open (gensym))
-        (close (gensym))
-        (depth (gensym))
-        (c (gensym)))
-    `(let* ((,s ,str)
-            (,p ,pos)
-            (,back ,backwards)
-            (,open (if ,back #\] #\[))
-            (,close (if ,back #\[ #\])))
-       (loop with ,depth = 0 for ,c = (char ,s ,p) do
-            (cond 
-              ((eq ,c ,open)
-               (incf ,depth))
-              ((eq ,c ,close)
-               (progn
-                 (decf ,depth)
-                 (when (zerop ,depth)
-                   (return ,p)))))
-            (if ,back (decf ,p) (incf ,p))))))
+(defun find-bracket (str pos &optional backwards)
+  (let ((open (if backwards #\] #\[))
+        (close (if backwards #\[ #\])))
+    (loop with depth = 0 for c = (char str pos) do
+         (cond 
+           ((eq c open)
+            (incf depth))
+           ((eq c close)
+            (progn
+              (decf depth)
+              (when (zerop depth)
+                (return pos)))))
+         (if backwards (decf pos) (incf pos)))))
 
 (defun bf-eval (state)
   (with-bf-slots (mem ip ptr program) state
