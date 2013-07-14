@@ -52,6 +52,11 @@
 >++++++++[<+++++++++++>-]<-.>++[<----------->-]<.+++++++++++
 ..>+++++++++[<---------->-]<-----.---.+++.---.[-]<<<]")
 
+;;;;
+;; eval functions
+;;;;
+
+
 (defstruct bf-state
   (mem (make-array 30000 :element-type '(unsigned-byte 8) :initial-element 0))
   (ip 0)
@@ -107,6 +112,18 @@
                       (incf ip)))
              (otherwise (incf ip)))))))
 
+(defun bf-repl ()
+  (loop do
+       (princ "BRAINFUCK> ")
+       (let ((line (read-line)))
+         (if (equal line "")
+             (return)
+             (bf-eval (make-bf-state :program line))))))
+
+;;;;
+;; compile functions
+;;;;
+
 (defun bf-body (program)
   `(lambda ()
      (let ((ptr 0) (mem (make-array 30000 :element-type '(unsigned-byte 8) :initial-element 0)))
@@ -120,7 +137,7 @@
                 (#\- (push '(setf (aref mem ptr) (mod (1- (aref mem ptr)) #x100)) (car stack)))
                 (#\. (push '(write-char (code-char (aref mem ptr))) (car stack)))
                 (#\[ (push nil stack))
-                (#\] (push (make-bf-loop (reverse (pop stack))) (car stack))))
+                (#\] (push (make-bf-loop (nreverse (pop stack))) (car stack))))
             finally (return (if (= (length stack) 1)
                                 (nreverse (car stack))
                                 (error "Unmatched bracket"))))))) 
@@ -131,11 +148,3 @@
 
 (defun bf-compile (program)
   (time (compile nil (bf-body program))))
-
-(defun bf-repl ()
-  (loop do
-       (princ "BRAINFUCK> ")
-       (let ((line (read-line)))
-         (if (equal line "")
-             (return)
-             (bf-eval (make-bf-state :program line))))))
