@@ -124,7 +124,7 @@
 ;; compile functions
 ;;;;
 
-(defun bf-body (program)
+(defun bf-body (program in out)
   `(lambda ()
      (let ((ptr 0) (mem (make-array 30000 :element-type '(unsigned-byte 8) :initial-element 0)))
        ,@(loop
@@ -135,8 +135,8 @@
                 (#\< (push '(decf ptr) (car stack)))
                 (#\+ (push '(setf (aref mem ptr) (mod (1+ (aref mem ptr)) #x100)) (car stack)))
                 (#\- (push '(setf (aref mem ptr) (mod (1- (aref mem ptr)) #x100)) (car stack)))
-                (#\. (push '(write-char (code-char (aref mem ptr))) (car stack)))
-                (#\, (push '(setf (aref mem ptr) (char-code (read-char))) (car stack)))
+                (#\. (push `(write-char (code-char (aref mem ptr)) ,out) (car stack)))
+                (#\, (push `(setf (aref mem ptr) (char-code (read-char ,in nil #\Nul))) (car stack)))
                 (#\[ (push nil stack))
                 (#\] (push (make-bf-loop (nreverse (pop stack))) (car stack))))
             finally (return (if (= (length stack) 1)
@@ -147,5 +147,5 @@
   `(loop while (not (zerop (aref mem ptr)))
         ,@(when body `(do ,@body))))
 
-(defun bf-compile (program)
-  (time (compile nil (bf-body program))))
+(defun bf-compile (program &key (in *standard-input*) (out *standard-output*))
+  (time (compile nil (bf-body program in out))))
