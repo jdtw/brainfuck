@@ -136,6 +136,7 @@
                 (#\+ (push '(setf (aref mem ptr) (mod (1+ (aref mem ptr)) #x100)) (car stack)))
                 (#\- (push '(setf (aref mem ptr) (mod (1- (aref mem ptr)) #x100)) (car stack)))
                 (#\. (push '(write-char (code-char (aref mem ptr))) (car stack)))
+                (#\, (push '(setf (aref mem ptr) (char-code (read-char))) (car stack)))
                 (#\[ (push nil stack))
                 (#\] (push (make-bf-loop (nreverse (pop stack))) (car stack))))
             finally (return (if (= (length stack) 1)
