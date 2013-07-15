@@ -90,7 +90,8 @@
                 (#\] (push (make-bf-loop (nreverse (pop stack))) (car stack))))
             finally (return (if (= (length stack) 1)
                                 (nreverse (car stack))
-                                (error "Unmatched bracket"))))))) 
+                                (error "Unmatched bracket"))))
+       (values)))) 
 
 (defun make-bf-loop (body)
   `(loop while (not (zerop (aref mem ptr)))
@@ -98,3 +99,12 @@
 
 (defun bf-compile (program &key (in *standard-input*) (out *standard-output*))
   (time (compile nil (bf-body program in out))))
+
+(defun bf-compile-file (path &key (in *standard-input*) (out *standard-output*))
+  (let ((program (with-open-file (bf path)
+                   (apply #'concatenate 'string
+                          (loop
+                             for line = (read-line bf nil :eof)
+                             until (eq line :eof)
+                             collect line)))))
+    (bf-compile program :in in :out out)))
