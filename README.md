@@ -36,6 +36,11 @@ the other popular options of -1 or "no change".)
 ### bf-compile
 
     TODO
+    
+## TODO
+
+* Finish documentation
+* Export functions from package
 
 [wiki]: http://en.wikipedia.org/wiki/Brainfuck
 [nice]: http://www.muppetlabs.com/~breadbox/bf/standards.html
