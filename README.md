@@ -14,6 +14,21 @@ This implementation is a [nice][nice] implementation:
   around.
 * If a program contains unbalanced brackets, an error will be raised. 
 
+## Quirks
+
+When EOF is read, the cell at the pointer is set to 0 (as opposed to
+the other popular options of -1 or "no change".
+
+## API
+
+### bf-eval
+
+### bf-repl
+
+### bf-body
+
+### bf-compile
+
 [wiki]: http://en.wikipedia.org/wiki/Brainfuck
 [nice]: http://www.muppetlabs.com/~breadbox/bf/standards.html
 
