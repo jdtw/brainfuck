@@ -17,17 +17,25 @@ This implementation is a [nice][nice] implementation:
 ## Quirks
 
 When EOF is read, the cell at the pointer is set to 0 (as opposed to
-the other popular options of -1 or "no change".
+the other popular options of -1 or "no change".)
 
 ## API
 
 ### bf-eval
 
+    TODO
+
 ### bf-repl
+
+    TODO
 
 ### bf-body
 
+    TODO
+
 ### bf-compile
+
+    TODO
 
 [wiki]: http://en.wikipedia.org/wiki/Brainfuck
 [nice]: http://www.muppetlabs.com/~breadbox/bf/standards.html
