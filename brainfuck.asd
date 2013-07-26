@@ -4,7 +4,7 @@
   :serial t
   :description "brainfuck"
   :author "John Wood <j@jdtw.us>"
-  :license "Simplified BSD"
+  :license "MIT"
   :components ((:file "package")
                (:file "brainfuck")))
 
