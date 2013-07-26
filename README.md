@@ -60,7 +60,8 @@ For example:
     
 Returns a compiled function. For example:
 
-    (funcall (bf-compile *hello-world*))
+    * (funcall (bf-compile *hello-world*))
+    Hello, World!
     
 ### bf-compile-file
 
@@ -68,11 +69,12 @@ Returns a compiled function. For example:
 
 Returns a compiled function. For example:
 
-    (bf-compile-file #p"bf/hello-world.lisp")
+    * (bf-compile-file #p"bf/hello-world.lisp")
+    Hello, world!
     
 ## sbcl vs. ccl
 
-On Win8 x64, the windows fork of sbcl requires a *lot* of time and
+On Win8 x64, the windows fork of sbcl requires a **lot** of time and
 memory to compile 99-bottles.bf:
 
     $ sbcl --dynamic-space-size 2048
